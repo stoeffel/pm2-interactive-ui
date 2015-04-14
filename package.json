@@ -19,7 +19,8 @@
     "test": ""
   },
   "files": [
-    "index.js"
+    "index.js",
+    "cli.js"
   ],
   "keywords": [
     "pm2",
