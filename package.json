@@ -1,0 +1,38 @@
+{
+  "name": "pm2-interactive-ui",
+  "version": "0.0.1",
+  "description": "My luminous module",
+  "license": "MIT",
+  "repository": "stoeffel/pm2-interactive-ui",
+  "author": {
+    "name": "stoeffel",
+    "email": "schtoeffel@gmail.com",
+    "url": "schtoeffel.ch"
+  },
+  "bin": {
+    "pm2i": "cli.js"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": ""
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "pm2",
+    "interactive",
+    "cli"
+  ],
+  "dependencies": {
+    "101": "^0.16.1",
+    "inquirer": "^0.8.2",
+    "log-symbols": "^1.0.2",
+    "pm2": "^0.12.10",
+    "shelljs": "^0.4.0"
+  },
+  "devDependencies": {
+  }
+}
