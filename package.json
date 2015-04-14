@@ -16,7 +16,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": ""
+    "test": "node test.js"
   },
   "files": [
     "index.js",
@@ -34,5 +34,7 @@
     "pm2": "^0.12.10",
     "shelljs": "^0.4.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "mockery": "^1.4.0"
+  }
 }
