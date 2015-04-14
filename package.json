@@ -1,6 +1,6 @@
 {
   "name": "pm2-interactive-ui",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "interactive cli for pm2",
   "license": "MIT",
   "repository": "stoeffel/pm2-interactive-ui",
