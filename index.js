@@ -12,9 +12,37 @@ var pm2 = require('pm2'),
 
 require('shelljs/global');
 
+function youDone() {
+	inquirer.prompt([{
+		type: "expand",
+		name: "done",
+		message: "Are you done?",
+		choices: [{
+		  key: 'y',
+			value: true,
+			name: 'Yes'
+		}, {
+			key: 'n',
+			value: false,
+			name: 'No'
+		}]
+	}], function( answer ) {
+		if (answer.done) {
+			process.exit(0);
+		} else {
+			chooseProcess();
+		}
+	});
+}
+
+function onError(err) {
+	console.error(err.message);
+	process.exit(1);
+}
+
 function chooseProcess() {
 	pm2.list(function(err, ret) {
-		if (err) throw err;
+		if (err) onError(err);
 
 		inquirer.prompt([{
 			type: "input",
@@ -57,9 +85,10 @@ function chooseProcess() {
 					exec('pm2 logs ' + answers.process);
 				} else {
 					pm2[answers.task](answers.process, function(err, data) {
-						if (err) throw err;
+						if (err) onError(err);
 						console.log(answers.process, answers.task, data.success?logSymbols.success:logSymbols.error);
-						process.exit(0);
+
+						youDone();
 					});
 				}
 			});
