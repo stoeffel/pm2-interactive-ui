@@ -54,14 +54,18 @@ function chooseProcess() {
 					type: "list",
 					name: "process",
 					message: "Choose a process?",
-					choices: ret.map(function(proc) {
+					choices: [
+							{value: 'all', name: 'all'},
+							new inquirer.Separator()
+						] .concat(
+						ret.map(function(proc) {
 						return {
 							value: proc.name,
 							name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
 						};
 					}).filter(function(choice) {
 						return choice.value.indexOf(answer.filter) >= 0;
-					}),
+					}))
 				}, {
 					type: "expand",
 					name: "task",
