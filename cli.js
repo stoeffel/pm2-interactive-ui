@@ -11,4 +11,5 @@ var argv = require('yargs')
 	.epilog('copyright 2015')
 	.argv;
 
-pm2I(argv._[0]);
+var filters = argv._.length > 0 ? argv._ : false;
+pm2I(filters);

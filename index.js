@@ -57,6 +57,11 @@ function chooseProcess(filter) {
 		}
 
 		function chooseFromList(answer) {
+			var filters = answer.filter;
+			if (!Array.isArray(answer.filter)) {
+				filters = answer.filter.split(' ');
+			}
+
 			inquirer.prompt([{
 				type: "list",
 				name: "process",
@@ -73,7 +78,10 @@ function chooseProcess(filter) {
 							name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
 						};
 					}).filter(function(choice) {
-						return choice.value.indexOf(answer.filter) >= 0;
+						return filters.reduce(function(prev, curr) {
+							if (!prev) return false;
+							return choice.value.indexOf(curr) >= 0;
+						}, true);
 					}))
 			}, {
 				type: "expand",
