@@ -66,23 +66,22 @@ function chooseProcess(filter) {
 				type: "list",
 				name: "process",
 				message: "Choose a process?",
-				choices: [{
+				choices: ret.map(function(proc) {
+					return {
+						value: proc.name,
+						name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
+					};
+				}).filter(function(choice) {
+					return filters.reduce(function(prev, curr) {
+						if (!prev) return false;
+						return choice.value.indexOf(curr) >= 0;
+					}, true);
+				}).concat([
+					new inquirer.Separator(), {
 						value: 'all',
 						name: 'all'
-					},
-					new inquirer.Separator()
-				].concat(
-					ret.map(function(proc) {
-						return {
-							value: proc.name,
-							name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
-						};
-					}).filter(function(choice) {
-						return filters.reduce(function(prev, curr) {
-							if (!prev) return false;
-							return choice.value.indexOf(curr) >= 0;
-						}, true);
-					}))
+					}
+				])
 			}, {
 				type: "expand",
 				name: "task",
