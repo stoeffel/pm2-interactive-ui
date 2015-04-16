@@ -3,7 +3,7 @@ var pm2 = require('pm2'),
 	logSymbols = require('log-symbols'),
 	inquirer = require('inquirer'),
 	STATES = {
-	  'online': 'success',
+		'online': 'success',
 		'stopped': 'warning',
 		'stopping': 'info',
 		'launching': 'info',
@@ -18,7 +18,7 @@ function youDone() {
 		name: "done",
 		message: "Are you done?",
 		choices: [{
-		  key: 'y',
+			key: 'y',
 			value: true,
 			name: 'Yes'
 		}, {
@@ -26,7 +26,7 @@ function youDone() {
 			value: false,
 			name: 'No'
 		}]
-	}], function( answer ) {
+	}], function(answer) {
 		if (answer.done) {
 			process.exit(0);
 		} else {
@@ -40,25 +40,34 @@ function onError(err) {
 	process.exit(1);
 }
 
-function chooseProcess() {
+function chooseProcess(filter) {
 	pm2.list(function(err, ret) {
 		if (err) onError(err);
 
-		inquirer.prompt([{
-			type: "input",
-			name: "filter",
-			message: "Filter processes",
-		}], function(answer) {
-			inquirer.prompt([
-				{
-					type: "list",
-					name: "process",
-					message: "Choose a process?",
-					choices: [
-							{value: 'all', name: 'all'},
-							new inquirer.Separator()
-						] .concat(
-						ret.map(function(proc) {
+		if (filter) {
+			chooseFromList({
+				filter: filter
+			});
+		} else {
+			inquirer.prompt([{
+				type: "input",
+				name: "filter",
+				message: "Filter processes",
+			}], chooseFromList);
+		}
+
+		function chooseFromList(answer) {
+			inquirer.prompt([{
+				type: "list",
+				name: "process",
+				message: "Choose a process?",
+				choices: [{
+						value: 'all',
+						name: 'all'
+					},
+					new inquirer.Separator()
+				].concat(
+					ret.map(function(proc) {
 						return {
 							value: proc.name,
 							name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
@@ -66,42 +75,42 @@ function chooseProcess() {
 					}).filter(function(choice) {
 						return choice.value.indexOf(answer.filter) >= 0;
 					}))
+			}, {
+				type: "expand",
+				name: "task",
+				message: "Choose a task?",
+				choices: [{
+					key: 'r',
+					value: 'restart',
+					name: 'Restart'
 				}, {
-					type: "expand",
-					name: "task",
-					message: "Choose a task?",
-					choices: [{
-						key: 'r',
-						value: 'restart',
-						name: 'Restart'
-					}, {
-						key: 's',
-						value: 'stop',
-						name: 'Stop'
-					}, {
-						key: 'l',
-						value: 'logs',
-						name: 'Logs'
-					}]
-				}
-			], function( answers ) {
+					key: 's',
+					value: 'stop',
+					name: 'Stop'
+				}, {
+					key: 'l',
+					value: 'logs',
+					name: 'Logs'
+				}]
+			}], function(answers) {
 				if (answers.task === 'logs') {
 					exec('pm2 logs ' + answers.process);
 				} else {
 					pm2[answers.task](answers.process, function(err, data) {
 						if (err) onError(err);
-						console.log(answers.process, answers.task, data.success?logSymbols.success:logSymbols.error);
+						console.log(answers.process, answers.task, data.success ? logSymbols.success : logSymbols.error);
 
 						youDone();
 					});
 				}
 			});
-		});
+		}
 	});
 }
 
-module.exports = function (str, opts) {
+module.exports = function(filter) {
 	pm2.connect(function() {
-		chooseProcess();
+		chooseProcess(filter);
 	});
 };
+

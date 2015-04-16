@@ -24,6 +24,22 @@ $ pm2i
   l) Logs
   h) Help, list all options
   Answer:
+
+
+# You can pass a filter string to skip the filter prompt
+
+$ pm2i foo
+? Choose a process? (Use arrow keys)
+❯ ✔ foo_proxy
+  ✔ foo
+? Choose a task? (Rslh)
+  r) Restart
+  s) Stop
+  l) Logs
+  h) Help, list all options
+  Answer:
+
+
 ```
 
 

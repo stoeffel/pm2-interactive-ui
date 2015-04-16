@@ -32,7 +32,8 @@
     "inquirer": "^0.8.2",
     "log-symbols": "^1.0.2",
     "pm2": "^0.12.10",
-    "shelljs": "^0.4.0"
+    "shelljs": "^0.4.0",
+    "yargs": "^3.7.2"
   },
   "devDependencies": {
     "mockery": "^1.4.0"
