@@ -1,0 +1,14 @@
+[{
+	"type": "expand",
+	"name": "done",
+	"message": "Are you done?",
+	"choices": [{
+			"key": "y",
+			"value": true,
+			"name": "Yes"
+		}, {
+		"key": "n",
+		"value": false,
+		"name": "No"
+	}]
+}]

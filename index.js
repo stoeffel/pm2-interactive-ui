@@ -2,6 +2,8 @@
 var pm2 = require('pm2'),
 	logSymbols = require('log-symbols'),
 	inquirer = require('inquirer'),
+	YOU_DONE = require('./you-done'),
+	FILTER_PROCESS = require('./filter-process'),
 	STATES = {
 		'online': 'success',
 		'stopped': 'warning',
@@ -13,20 +15,7 @@ var pm2 = require('pm2'),
 require('shelljs/global');
 
 function youDone() {
-	inquirer.prompt([{
-		type: "expand",
-		name: "done",
-		message: "Are you done?",
-		choices: [{
-			key: 'y',
-			value: true,
-			name: 'Yes'
-		}, {
-			key: 'n',
-			value: false,
-			name: 'No'
-		}]
-	}], function(answer) {
+	inquirer.prompt(YOU_DONE, function(answer) {
 		if (answer.done) {
 			process.exit(0);
 		} else {
@@ -49,11 +38,7 @@ function chooseProcess(filter) {
 				filter: filter
 			});
 		} else {
-			inquirer.prompt([{
-				type: "input",
-				name: "filter",
-				message: "Filter processes",
-			}], chooseFromList);
+			inquirer.prompt(FILTER_PROCESS, chooseFromList);
 		}
 
 		function chooseFromList(answer) {
