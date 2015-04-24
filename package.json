@@ -20,7 +20,9 @@
   },
   "files": [
     "index.js",
-    "cli.js"
+    "cli.js",
+    "you-done.json",
+    "filter-process.json"
   ],
   "keywords": [
     "pm2",
