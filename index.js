@@ -1,5 +1,9 @@
 'use strict';
 var pm2 = require('pm2'),
+	curry2 = require('1-liners/curry2'),
+	map = curry2(require('1-liners/map')),
+	filter = curry2(require('1-liners/filter')),
+	compose = require('1-liners/compose'),
 	logSymbols = require('log-symbols'),
 	inquirer = require('inquirer'),
 	YOU_DONE = require('./you-done'),
@@ -29,13 +33,13 @@ function onError(err) {
 	process.exit(1);
 }
 
-function chooseProcess(filter) {
+function chooseProcess(filterStr) {
 	pm2.list(function(err, ret) {
 		if (err) onError(err);
 
-		if (filter) {
+		if (filterStr) {
 			chooseFromList({
-				filter: filter
+				filter: filterStr
 			});
 		} else {
 			inquirer.prompt(FILTER_PROCESS, chooseFromList);
@@ -51,22 +55,26 @@ function chooseProcess(filter) {
 				type: "list",
 				name: "process",
 				message: "Choose a process?",
-				choices: ret.map(function(proc) {
-					return {
-						value: proc.name,
-						name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
-					};
-				}).filter(function(choice) {
-					return filters.reduce(function(prev, curr) {
-						if (!prev) return false;
-						return choice.value.indexOf(curr) >= 0;
-					}, true);
-				}).concat([
-					new inquirer.Separator(), {
-						value: 'all',
-						name: 'all'
-					}
-				])
+				choices:
+					compose(
+						filter(function(choice) {
+							return filters.reduce(function(prev, curr) {
+								if (!prev) return false;
+								return choice.value.indexOf(curr) >= 0;
+							}, true);
+						}),
+						map(function(proc) {
+							return {
+								value: proc.name,
+								name: logSymbols[STATES[proc.pm2_env.status]] + ' ' + proc.name
+							};
+						})
+					)(ret).concat([
+						new inquirer.Separator(), {
+							value: 'all',
+							name: 'all'
+						}
+					])
 			}, {
 				type: "expand",
 				name: "task",
@@ -100,9 +108,9 @@ function chooseProcess(filter) {
 	});
 }
 
-module.exports = function(filter) {
+module.exports = function(filterStr) {
 	pm2.connect(function() {
-		chooseProcess(filter);
+		chooseProcess(filterStr);
 	});
 };
 

@@ -28,6 +28,7 @@
     "cli"
   ],
   "dependencies": {
+    "1-liners": "0.0.6",
     "inquirer": "^0.8.2",
     "log-symbols": "^1.0.2",
     "pm2": "^0.12.10",
