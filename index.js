@@ -7,7 +7,6 @@ var pm2 = require('pm2'),
 	logSymbols = require('log-symbols'),
 	inquirer = require('inquirer'),
 	YOU_DONE = require('./you-done'),
-	FILTER_PROCESS = require('./filter-process'),
 	STATES = {
 		'online': 'success',
 		'stopped': 'warning',
@@ -18,12 +17,12 @@ var pm2 = require('pm2'),
 
 require('shelljs/global');
 
-function youDone() {
+function youDone(filterStr) {
 	inquirer.prompt(YOU_DONE, function(answer) {
 		if (answer.done) {
 			process.exit(0);
 		} else {
-			chooseProcess();
+			chooseProcess(filterStr, true);
 		}
 	});
 }
@@ -33,20 +32,29 @@ function onError(err) {
 	process.exit(1);
 }
 
-function chooseProcess(filterStr) {
+function chooseProcess(filterStr, notDoneYet) {
 	pm2.list(function(err, ret) {
 		if (err) onError(err);
 
-		if (filterStr) {
+
+		var askForFilter = [{
+			type: "input",
+			name: "filter",
+			message: "Filter processes",
+			default:   function() { return filterStr || ''; }
+		}];
+
+		if (filterStr && !notDoneYet) {
 			chooseFromList({
 				filter: filterStr
 			});
 		} else {
-			inquirer.prompt(FILTER_PROCESS, chooseFromList);
+			inquirer.prompt(askForFilter, chooseFromList);
 		}
 
 		function chooseFromList(answer) {
 			var filters = answer.filter;
+			filterStr = filters;
 			if (!Array.isArray(answer.filter)) {
 				filters = answer.filter.split(' ');
 			}
@@ -100,7 +108,7 @@ function chooseProcess(filterStr) {
 						if (err) onError(err);
 						console.log(answers.process, answers.task, data.success ? logSymbols.success : logSymbols.error);
 
-						youDone();
+						youDone(filterStr);
 					});
 				}
 			});
