@@ -9,6 +9,7 @@
 $ npm install -g pm2-interactive-ui
 ```
 
+![gif ftw](./pm2i.gif)
 
 ## Usage
 
