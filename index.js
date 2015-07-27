@@ -32,7 +32,7 @@ function onError(err) {
 	process.exit(1);
 }
 
-function chooseProcess(filterStr, notDoneYet) {
+function chooseProcess(filterStr, notDoneYet, command) {
 	pm2.list(function(err, ret) {
 		if (err) onError(err);
 
@@ -58,8 +58,28 @@ function chooseProcess(filterStr, notDoneYet) {
 			if (!Array.isArray(answer.filter)) {
 				filters = answer.filter.split(' ');
 			}
+			var actions;
+			if (!command)
+				actions = {
+					type: "expand",
+					name: "task",
+					message: "Choose a task?",
+					choices: [{
+						key: 'r',
+						value: 'restart',
+						name: 'Restart'
+					}, {
+						key: 's',
+						value: 'stop',
+						name: 'Stop'
+					}, {
+						key: 'l',
+						value: 'logs',
+						name: 'Logs'
+					}]
+				};
 
-			inquirer.prompt([{
+			var prompts = [{
 				type: "list",
 				name: "process",
 				message: "Choose a process?",
@@ -83,24 +103,12 @@ function chooseProcess(filterStr, notDoneYet) {
 							name: 'all'
 						}
 					])
-			}, {
-				type: "expand",
-				name: "task",
-				message: "Choose a task?",
-				choices: [{
-					key: 'r',
-					value: 'restart',
-					name: 'Restart'
-				}, {
-					key: 's',
-					value: 'stop',
-					name: 'Stop'
-				}, {
-					key: 'l',
-					value: 'logs',
-					name: 'Logs'
-				}]
-			}], function(answers) {
+			}];
+
+			if (actions) prompts.push(actions);
+			inquirer.prompt(prompts, function(answers) {
+				if (command) answers.task = command;
+				command = undefined;
 				if (answers.task === 'logs') {
 					exec('pm2 logs ' + answers.process);
 				} else {
@@ -116,9 +124,9 @@ function chooseProcess(filterStr, notDoneYet) {
 	});
 }
 
-module.exports = function(filterStr) {
+module.exports = function(filterStr, command) {
 	pm2.connect(function() {
-		chooseProcess(filterStr);
+		chooseProcess(filterStr, null, command);
 	});
 };
 
